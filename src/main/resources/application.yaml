@@ -43,3 +43,9 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+#cloud:
+#  aws:
+#    credential:
+#      accessKey:
+#      secretKey:
