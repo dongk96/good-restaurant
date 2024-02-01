@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  forward-headers-strategy: native
+
+kakao:
+  api:
+    key: 96f852f23cec62a0d1b1779705073209
+  url:
+    search:
+      local: https://dapi.kakao.com/v2/local/search/keyword.json
+
+naver:
+  url:
+    search:
+      local: https://openapi.naver.com/v1/search/local.json
+  client:
+    id : N3RRwr_HmoezA9_hjk6D
+    secret: 3trwZUt8eo
+
+
+auth:
+  jwt:
+    issuer: team.sparta.com
+    secret: PO4c8z41Hia5gJG3oeuFJMRYBB4Ws4aZ
+    accessTokenExpirationHour: 168
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/restaurant
+    username: root
+    password: ldg247612!
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
