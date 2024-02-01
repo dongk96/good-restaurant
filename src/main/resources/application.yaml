@@ -27,7 +27,7 @@ auth:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/restaurant
+    url: jdbc:mysql://15.165.160.27:3306/restaurant
     username: root
     password: ldg247612!
   jpa:
