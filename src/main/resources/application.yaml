@@ -27,9 +27,9 @@ auth:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://15.165.160.27:3306/restaurant
-    username: root
-    password: Ldg247612!
+    url: jdbc:mysql://restaurant-database.cnaiu6sa65b5.ap-northeast-2.rds.amazonaws.com:3306/restaurant?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: admin
+    password: ldg247612!
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
