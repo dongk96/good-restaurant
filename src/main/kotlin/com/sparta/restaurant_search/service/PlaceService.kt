@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.net.InetAddress
 
 @Service
-class PlaceService (
+class PlaceService(
     private val kakaoClient: KakaoClient,
     private val naverClient: NaverClient,
     private val redisTemplate: RedisTemplate<String, String>,
@@ -31,7 +31,7 @@ class PlaceService (
     private val userRepository: UserRepository,
     private val followRepository: FollowRepository,
     private val promiseRepository: PromiseRepository,
-    private val databaseReader: DatabaseReader
+    private val databaseReader: DatabaseReader,
 ){
     fun findPlacesKakao(request: String): List<PlaceDto> {
         redisStore(request)
