@@ -6,16 +6,16 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import java.io.File
+import java.io.InputStream
 
 @Configuration
 class GeoLocationConfig {
     @Bean("databaseReader")
     fun databaseReader(): DatabaseReader {
-        val resource = ClassPathResource("geolocation/GeoLite2-City.mmdb")
-        val file = resource.file
+        val inputStream: InputStream = ClassPathResource("geolocation/GeoLite2-City.mmdb").inputStream
 
         return DatabaseReader
-            .Builder(file)
+            .Builder(inputStream)
             .withCache(CHMCache())
             .build()
     }
