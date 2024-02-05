@@ -45,7 +45,7 @@ jobs:
           push: true
           dockerfile: ./Dockerfile
           tags: ${DOCKER_USERNAME}/restaurant_search
-          cache-from: type=gha # 여기서 gha 는 Guthub Actions 용 캐시를 의미합니다.
+          cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: SSH Commands
