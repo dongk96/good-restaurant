@@ -19,8 +19,8 @@ jobs:
           distribution: 'adopt'
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
-      - name: gradlew bootJar
-        run: ./gradlew bootJar
+      - name: gradlew build
+        run: ./gradlew build -Pjasypt.encryptor.password=5678
       - name: copy jar to server
         uses: appleboy/scp-action@master
         with:

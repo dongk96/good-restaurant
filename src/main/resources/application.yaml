@@ -44,6 +44,11 @@ spring:
       host: 15.164.129.186
       port: 6379
 
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: 5678
+
 #cloud:
 #  aws:
 #    credential:

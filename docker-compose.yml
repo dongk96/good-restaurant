@@ -24,9 +24,9 @@ services:
       - 8080:8080
     container_name: good_restaurant
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://restaurant-database.cnaiu6sa65b5.ap-northeast-2.rds.amazonaws.com:3306/restaurant_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: ldg247612!
+      SPRING_DATASOURCE_URL: jdbc:mysql://restaurant-database.cnaiu6sa65b5.ap-northeast-2.rds.amazonaws.com:3306/restaurant?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: ${DOCKER_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DOCKER_PASSWORD}
       SPRING_PROFILES_ACTIVE: dev
     networks:
       - restaurant_network

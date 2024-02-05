@@ -69,6 +69,7 @@ allOpen {
     annotation("jakarta.persistence.Embeddable")
 }
 
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs += "-Xjsr305=strict"
