@@ -1,5 +1,5 @@
-FROM openjdk:17-jdk-slim AS builder
+FROM openjdk:17-jdk-slim
 
-COPY --from=builder build/libs/*.jar app.jar
+COPY build/libs/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]
