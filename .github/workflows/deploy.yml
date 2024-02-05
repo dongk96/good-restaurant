@@ -57,10 +57,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ec2-user
           key: ${{ secrets.SSH_KEY }}
-          port: 22
           source: "./docker-compose.yaml"
-          target: "~"
-          strip_components: 2
+          target: "/home/ec2-user/"
 
       - name: SSH Commands
         uses: appleboy/ssh-action@v0.1.6
