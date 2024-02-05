@@ -16,7 +16,7 @@ services:
   webapp:
     build:
       context: .
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     restart: always
     depends_on:
       - database

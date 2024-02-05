@@ -46,7 +46,7 @@ jobs:
         with:
           context: ./
           push: true
-          dockerfile: DockerFile
+          dockerfile: Dockerfile
           tags: ${{secrets.DOCKER_USERNAME}}/restaurant_search
           cache-from: type=gha
           cache-to: type=gha,mode=max
