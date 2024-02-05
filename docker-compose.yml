@@ -5,8 +5,8 @@ services:
     container_name: restaurant_db
     environment:
       - MYSQL_DATABASE=restaurant_db
-      - MYSQL_ROOT_HOST=admin
-      - MYSQL_ROOT_PASSWORD=ldg247612!
+      - MYSQL_ROOT_HOST= ${DOCKER_DB_USERNAME}
+      - MYSQL_ROOT_PASSWORD= ${DOCKER_DB_PASSWORD}
     ports:
       - 3306:3306
     volumes:
