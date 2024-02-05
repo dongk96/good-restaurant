@@ -32,8 +32,21 @@ jobs:
           target: "~"
           strip_components: 2
 
-      - name: copy docker-compose.yml
-        run: cp docker-compose.yml ~/
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${DOCKER_USERNAME}
+          password: ${DOCKER_PASSWORD}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          push: true
+          dockerfile: ./Dockerfile
+          tags: ${DOCKER_USERNAME}/restaurant_search
+          cache-from: type=gha # 여기서 gha 는 Guthub Actions 용 캐시를 의미합니다.
+          cache-to: type=gha,mode=max
 
       - name: SSH Commands
         uses: appleboy/ssh-action@v0.1.6
@@ -44,4 +57,7 @@ jobs:
           port: 22
           script_stop: true
           script: |
+            docker-compose down
+            docker image rm ${{ secrets.DOCKER_USERNAME }}/restaurant_search
+            docker-compose up -d
             nohup java -jar *.jar 1> /dev/null 2>&1 &
