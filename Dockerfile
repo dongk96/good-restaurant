@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk17 AS builder
+FROM openjdk:17-jdk-slim AS builder
 
 RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
