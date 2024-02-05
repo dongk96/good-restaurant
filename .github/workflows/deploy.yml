@@ -47,7 +47,7 @@ jobs:
           context: ./
           push: true
           dockerfile: Dockerfile
-          tags: ${{secrets.DOCKER_USERNAME}}/restaurant_search
+          tags: ${{secrets.DOCKER_USERNAME}}/restaurant_search:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -60,4 +60,6 @@ jobs:
           port: 22
           script_stop: true
           script: |
+            docker-compose down
+            docker image rm ${{ secrets.DOCKER_USERNAME }}/restaurant_search:latest
             docker-compose up -d

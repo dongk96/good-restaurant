@@ -1,45 +1,41 @@
 version: "3"
 services:
-  database:
-    image: mysql
-    container_name: restaurant_db
-    environment:
-      - MYSQL_DATABASE=restaurant_db
-      - MYSQL_ROOT_HOST= ${DOCKER_DB_USERNAME}
-      - MYSQL_ROOT_PASSWORD= ${DOCKER_DB_PASSWORD}
+  app:
+    image: restaurant_search:latest
     ports:
-      - 3306:3306
-    volumes:
-      - ./db/data:/var/lib/mysql
-    networks:
-      - restaurant_network
-  webapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
+      - "8080:8080"
     depends_on:
+      - redis
       - database
-    ports:
-      - 8080:8080
-    container_name: restaurant_search
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://restaurant-database.cnaiu6sa65b5.ap-northeast-2.rds.amazonaws.com:3306/restaurant?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://restaurant-database.cnaiu6sa65b5.ap-northeast-2.rds.amazonaws.com:3306/restaurant_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${DOCKER_DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DOCKER_DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: dev
     networks:
       - restaurant_network
+
   redis:
-    image: redis:alpine
-    command: redis-server --port 6379
-    container_name: redis-server --port 6379
-    hostname: redis_boot
-    labels:
-      - "name=redis"
-      - "mode=standalone"
+    hostname: redis
+    image: redis:latest
     ports:
-      - 6379:6379
+      - "6379:6379"
+    networks:
+      - restaurant_network
+
+  database:
+    image: mysql
+    container_name: restaurant_db
+    environment:
+      - MYSQL_DATABASE=restaurant_db
+      - MYSQL_ROOT_HOST=${DOCKER_DB_USERNAME}
+      - MYSQL_ROOT_PASSWORD=${DOCKER_DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/data:/var/lib/mysql
+    networks:
+      - restaurant_network
 
 networks:
   restaurant_network:
