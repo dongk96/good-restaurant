@@ -32,6 +32,9 @@ jobs:
           target: "~"
           strip_components: 2
 
+      - name: copy docker-compose.yml
+        run: cp docker-compose.yml ~/
+
       - name: SSH Commands
         uses: appleboy/ssh-action@v0.1.6
         with:
