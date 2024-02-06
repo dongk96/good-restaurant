@@ -42,7 +42,8 @@ class PlaceService(
     }
 
     fun findPlacesAround(request: String, ipAddress: String): List<PlaceDto> {
-        val response: CityResponse = databaseReader.city(InetAddress.getByName(ipAddress))
+        val ipAddressBytes = InetAddress.getByName(ipAddress).address
+        val response: CityResponse = databaseReader.city(InetAddress.getByAddress(ipAddressBytes))
         val location: Location = response.location
 
         redisStore(request)
