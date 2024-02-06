@@ -41,7 +41,7 @@ spring:
         format_sql: true
   data:
     redis:
-      host: 15.164.129.186:8080
+      host: 15.164.129.186:8081
       port: 6379
 
 jasypt:
