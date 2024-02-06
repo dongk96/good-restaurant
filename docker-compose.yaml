@@ -9,8 +9,8 @@ services:
       - database
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://restaurant-database.cnaiu6sa65b5.ap-northeast-2.rds.amazonaws.com:3306/restaurant_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: ${secrets.DOCKER_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${secrets.DOCKER_DB_PASSWORD}
+      SPRING_DATASOURCE_USERNAME: secrets.DOCKER_DB_USERNAME
+      SPRING_DATASOURCE_PASSWORD: secrets.DOCKER_DB_PASSWORD
       SPRING_PROFILES_ACTIVE: dev
     networks:
       - restaurant_network
