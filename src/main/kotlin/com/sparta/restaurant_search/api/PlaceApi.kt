@@ -53,8 +53,9 @@ class PlaceApi(
         request: HttpServletRequest
     ): ResponseEntity<ListResponse<PlaceDto>> {
         println(request.remoteAddr)
-        val places = placeService.findPlacesAround(search, request.remoteAddr)
+        val ipAddress = request.getHeader("X-FORWARDED-FOR") ?: request.remoteAddr
 
+        val places = placeService.findPlacesAround(search, ipAddress)
         return ResponseEntity(ListResponse.successOf(places), HttpStatus.OK)
     }
 
