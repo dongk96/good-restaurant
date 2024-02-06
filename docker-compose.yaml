@@ -1,41 +1,13 @@
 version: "3"
 services:
   app:
-    image: restaurant_search:latest
+    image: dlehdrb/restaurant_search:latest
     ports:
       - "8080:8080"
     depends_on:
       - redis
-      - database
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://restaurant-database.cnaiu6sa65b5.ap-northeast-2.rds.amazonaws.com:3306/restaurant_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: $secrets.DOCKER_DB_USERNAME
-      SPRING_DATASOURCE_PASSWORD: $secrets.DOCKER_DB_PASSWORD
-      SPRING_PROFILES_ACTIVE: dev
-    networks:
-      - restaurant_network
-
   redis:
     hostname: redis
     image: redis:latest
     ports:
       - "6379:6379"
-    networks:
-      - restaurant_network
-
-  database:
-    image: mysql
-    container_name: restaurant_db
-    environment:
-      - MYSQL_DATABASE=restaurant_db
-      - MYSQL_ROOT_HOST=$secrets.DOCKER_DB_USERNAME
-      - MYSQL_ROOT_PASSWORD=$secrets.DOCKER_DB_PASSWORD
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./db/data:/var/lib/mysql
-    networks:
-      - restaurant_network
-
-networks:
-  restaurant_network:
