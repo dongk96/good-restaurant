@@ -14,7 +14,7 @@ import java.io.InputStream
 class GeoLocationConfig {
     @Bean("databaseReader")
     fun databaseReader(): DatabaseReader {
-        val database = FileSystemResource("/geolocation/geoLite2-city.mmdb")
+        val database = FileSystemResource("/home/ec2-user/geolocation/geoLite2-city.mmdb")
 
 //        val database = ClassPathResource("geolocation/GeoLite2-City.mmdb")
         return DatabaseReader
