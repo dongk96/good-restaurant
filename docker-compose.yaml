@@ -4,8 +4,11 @@ services:
     image: dlehdrb/restaurant_search:latest
     ports:
       - "8081:8081"
+    volumes:
+      - home/ec2-user:/home/ec2-user
     depends_on:
       - redis
+
   redis:
     hostname: redis
     image: redis:latest
