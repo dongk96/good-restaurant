@@ -46,7 +46,6 @@ class PlaceService(
         val location: Location = response.location
 
         redisStore(request)
-
         val places = kakaoClient.localSearchWithLocation(SearchKakaoWithLocationRequest(request, location.latitude, location.longitude))
 
         return PlaceDto.fromKakao(places)
