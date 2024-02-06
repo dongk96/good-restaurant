@@ -3,7 +3,7 @@ services:
   app:
     image: dlehdrb/restaurant_search:latest
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       - redis
   redis:
