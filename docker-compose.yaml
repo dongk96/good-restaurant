@@ -9,3 +9,4 @@ services:
     environment:
       - REDIS_HOST = 3.36.66.213
       - REDIS_PORT = 6379
+      - REDIS_PASSWORD = $${REDIS_PASSWORD}

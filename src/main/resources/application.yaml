@@ -43,6 +43,7 @@ spring:
     redis:
       host: 3.36.66.213
       port: 6379
+      password: 1234
 
 jasypt:
   encryptor:
