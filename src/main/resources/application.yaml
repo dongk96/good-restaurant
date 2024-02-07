@@ -41,9 +41,8 @@ spring:
         format_sql: true
   data:
     redis:
-      host: 43.201.99.164
+      host: 3.36.66.213
       port: 6379
-      password: 1234
 
 jasypt:
   encryptor:
