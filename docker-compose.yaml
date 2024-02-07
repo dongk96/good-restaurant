@@ -7,6 +7,5 @@ services:
     volumes:
       - /home/ec2-user:/home/ec2-user
     environment:
-      - REDIS_HOST = ec2-43-201-99-164.ap-northeast-2.compute.amazonaws.com
+      - REDIS_HOST = 3.36.66.213
       - REDIS_PORT = 6379
-      - REDIS_PASSWORD = $${secrets.REDIS_PASSWORD}
