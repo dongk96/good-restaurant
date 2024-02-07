@@ -69,6 +69,4 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            docker-compose down
-            docker image rm ${{secrets.DOCKER_USERNAME}}/restaurant_search:latest
             docker-compose up -d
