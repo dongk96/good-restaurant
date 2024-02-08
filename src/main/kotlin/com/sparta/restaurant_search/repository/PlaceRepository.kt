@@ -15,7 +15,7 @@ interface PlaceRepository: JpaRepository<DeliciousPlace, Long> {
 
     fun findByPlaceName(placeName: String): DeliciousPlace?
 
-    @Query("SELECT NEW com.sparta.restaurant_search.domain.dto.BestPlaceDto(p.placeId, p.placeName, p.placeAddress, p.placeUrl, COUNT(p.placeId)) " +
+    @Query("SELECT NEW com.sparta.restaurant_search.domain.dto.BestPlaceDto(p.placeId, p.placeName, p.placeAddress, p.placeUrl, COUNT(p.placeName)) " +
             "FROM DeliciousPlace p " +
             "GROUP BY p.placeId, p.placeName, p.placeAddress, p.placeUrl " +
             "ORDER BY COUNT(p.placeId) DESC")

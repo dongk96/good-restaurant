@@ -34,10 +34,21 @@ class DeliciousPlace(
     @Column(name = "place-url")
     val placeUrl: String = placeUrl
 
+//    @Column(name = "regis-num")
+//    var regisNum: Long = 0
+
     @OneToMany(mappedBy = "place", cascade = [CascadeType.REMOVE])
     var promiseList: MutableList<Promise> = mutableListOf()
 
     fun addPromise(promise: Promise) {
         this.promiseList.add(promise)
     }
+
+//    fun addRegistrationNum(regisNumNow: Long) {
+//        this.regisNum = regisNumNow + 1
+//    }
+//
+//    fun minusRegistrationNum(regisNumNow: Long) {
+//        this.regisNum = regisNumNow - 1
+//    }
 }
