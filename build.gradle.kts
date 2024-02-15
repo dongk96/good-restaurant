@@ -47,7 +47,6 @@ dependencies {
     implementation("com.maxmind.geoip2:geoip2:4.1.0")
 
     runtimeOnly ("com.mysql:mysql-connector-j")
-    runtimeOnly("com.h2database:h2")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
@@ -55,6 +54,11 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jeasy:easy-random-core:4.0.0")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:mysql:1.19.3")
     testImplementation("org.testcontainers:junit-jupiter:1.16.3")
 }
 

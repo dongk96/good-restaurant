@@ -28,22 +28,16 @@ class PlaceApi(
     fun findPlaces(
         @RequestParam search: String
     ): ResponseEntity<ListResponse<PlaceDto>> {
-        try {
-            val placesKakao = placeService.findPlacesKakao(search)
-            return ResponseEntity(ListResponse.successOf(placesKakao), HttpStatus.OK)
-        } catch (kakaoException: KakaoApiException) {
-            // Kakao API 호출 중 예외 발생 시 Naver API로 대체 호출
-            try {
-                val placesNaver = placeService.findPlacesNaver(search)
-                return ResponseEntity(ListResponse.successOf(placesNaver), HttpStatus.OK)
-            } catch (naverException: NaverApiException) {
-                // Naver API 호출 중 예외 발생 시 에러 응답
-                return ResponseEntity(
-                    ListResponse.fail(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-                )
-            }
-        }
+        val places = placeService.findPlaces(search)
+        return if(places.isEmpty())
+            ResponseEntity(
+                ListResponse.fail(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        else
+            ResponseEntity(
+                ListResponse.successOf(places),
+                HttpStatus.OK)
     }
 
     @GetMapping("/v2/places/search-around")

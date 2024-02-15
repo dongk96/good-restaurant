@@ -8,6 +8,8 @@ import com.sparta.restaurant_search.domain.dto.KeywordDto
 import com.sparta.restaurant_search.domain.dto.PlaceDto
 import com.sparta.restaurant_search.domain.entity.DeliciousPlace
 import com.sparta.restaurant_search.exception.BadRequestException
+import com.sparta.restaurant_search.exception.KakaoApiException
+import com.sparta.restaurant_search.exception.NaverApiException
 import com.sparta.restaurant_search.exception.NotFoundException
 import com.sparta.restaurant_search.kakao.KakaoClient
 import com.sparta.restaurant_search.naver.NaverClient
@@ -30,15 +32,22 @@ class PlaceService(
     private val placeRepository: PlaceRepository,
     private val userRepository: UserRepository,
     private val followRepository: FollowRepository,
-    private val promiseRepository: PromiseRepository,
     private val databaseReader: DatabaseReader,
 ){
-    fun findPlacesKakao(request: String): List<PlaceDto> {
+
+    fun findPlaces(request: String): List<PlaceDto> {
         redisStore(request)
-
-        val places = kakaoClient.localSearch(SearchKakaoRequest(request))
-
-        return PlaceDto.fromKakao(places)
+        var answer: List<PlaceDto>
+        try {
+            val places = kakaoClient.localSearch(SearchKakaoRequest(request))
+            answer = PlaceDto.fromKakao(places)
+        } catch (kakaoException: KakaoApiException) {
+            val places = naverClient.localSearch(SearchNaverRequest(request))
+            answer = PlaceDto.fromNaver(places)
+        } catch(naverException: NaverApiException) {
+            answer = emptyList()
+        }
+        return answer
     }
 
     fun findPlacesAround(request: String, ipAddress: String): List<PlaceDto> {
@@ -52,6 +61,7 @@ class PlaceService(
         return PlaceDto.fromKakao(places)
     }
 
+    // TODO TEST
     private fun redisStore(request: String) {
         val operations: ValueOperations<String, String> = redisTemplate.opsForValue()
 
@@ -64,12 +74,6 @@ class PlaceService(
             val incrementedValue = (value.toInt() + 1).toString()
             operations.set(request, incrementedValue)
         }
-    }
-
-    fun findPlacesNaver(request: String): List<PlaceDto> {
-        val places = naverClient.localSearch(SearchNaverRequest(request))
-
-        return PlaceDto.fromNaver(places)
     }
 
     @Transactional
@@ -129,16 +133,15 @@ class PlaceService(
         return placeRepository.findBestPlaceList()
     }
 
+
+    // TODO TEST
     fun findBestKeywords(): List<KeywordDto> {
         val operations: ValueOperations<String, String> = redisTemplate.opsForValue()
 
-        // Redis에서 모든 키 가져오기
         val allKeys: Set<String> = redisTemplate.keys("*")
 
-        // 키와 값을 조회하여 KeywordDto 리스트로 매핑
         val keywords: List<KeywordDto> = allKeys.mapNotNull { key ->
             val value = operations.get(key)
-            // 값이 숫자로 파싱 가능한 경우에만 KeywordDto로 변환
             value?.let {
                 try {
                     KeywordDto(key, it.toString().toLong())

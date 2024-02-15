@@ -20,7 +20,7 @@ naver:
 
 auth:
   jwt:
-    issuer: team.sparta.com
+    issuer: team-sparta-com
     secret: PO4c8z41Hia5gJG3oeuFJMRYBB4Ws4aZ
     accessTokenExpirationHour: 168
 
@@ -41,7 +41,7 @@ spring:
         format_sql: true
   data:
     redis:
-      host: 3.39.239.189
+      host: 13.209.22.103
       port: 6379
       password: 1234
 
