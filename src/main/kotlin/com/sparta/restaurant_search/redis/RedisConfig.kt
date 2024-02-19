@@ -29,7 +29,7 @@ class RedisConfig {
         val config = Config()
         config.useSingleServer()
             .setAddress("redis://${host}:${port1}")
-//            .setPassword(password1)
+            .setPassword(password1)
         return Redisson.create(config)
     }
 }
