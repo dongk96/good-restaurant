@@ -5,8 +5,8 @@ import org.springframework.util.MultiValueMap
 
 data class SearchKakaoWithLocationRequest(
         private val query: String = "",
-        private val x: Double? = 0.0,
-        private val y: Double? = 0.0,
+        private val x: Double = 0.0,
+        private val y: Double = 0.0,
         private val size: Int = 15,
         private val sort: String = "accuracy"
 
