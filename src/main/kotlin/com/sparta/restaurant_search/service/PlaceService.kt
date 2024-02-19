@@ -41,9 +41,10 @@ class PlaceService(
     private val followRepository: FollowRepository,
     private val databaseReader: DatabaseReader,
     private val redissonClient: RedissonClient,
-    private val attributeStrategy: AttributeStrategy
 ){
     private val lockPrefix = "lock:"
+    @Autowired
+    private lateinit var attributeStrategy: AttributeStrategy
 
 
     fun findPlaces(request: String): List<PlaceDto> {
