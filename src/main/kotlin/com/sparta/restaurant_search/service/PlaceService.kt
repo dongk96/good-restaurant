@@ -68,6 +68,8 @@ class PlaceService(
         val ipResponse = attributeStrategy.getAttribute(request)
         val latitude = ipResponse.get("latitude")
         val longitude = ipResponse.get("longitude")
+        println(latitude)
+        println(longitude)
 
         redisStore(search)
         val places = kakaoClient.localSearchWithLocation(SearchKakaoWithLocationRequest(search, latitude.asDouble, longitude.asDouble))
