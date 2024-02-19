@@ -1,5 +1,6 @@
 package com.sparta.restaurant_search.service
 
+import com.google.gson.JsonObject
 import com.ip2location.spring.strategies.attribute.AttributeStrategy
 import com.maxmind.geoip2.DatabaseReader
 import com.maxmind.geoip2.model.CityResponse
@@ -65,7 +66,7 @@ class PlaceService(
 //        val ipAddressBytes = InetAddress.getByName(ipAddress).address
 //        val response: CityResponse = databaseReader.city(InetAddress.getByAddress(ipAddressBytes))
 //        val location: Location = response.location
-        val ipResponse = attributeStrategy.getAttribute(request)
+        val ipResponse = attributeStrategy.getAttribute(request) as JsonObject
         val latitude = ipResponse.get("latitude")
         val longitude = ipResponse.get("longitude")
         println(latitude)
