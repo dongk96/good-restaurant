@@ -19,9 +19,11 @@ import io.mockk.runs
 import junit.framework.TestCase.assertEquals
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import java.time.LocalDateTime
 
@@ -35,6 +37,7 @@ class PlaceServiceTest {
     private val userRepository:UserRepository = mockk()
     private val followRepository:FollowRepository = mockk()
     private val databaseReader: DatabaseReader = mockk()
+    private val redissonClient:RedissonClient = mockk()
 
     @Test
     fun 카카오_기반_장소_찾기() {
@@ -65,7 +68,7 @@ class PlaceServiceTest {
 
         every { naverClient.localSearch(any()) } returns SearchNaverResponse("2024-02-13", 2, 1, 1, items)
 
-        val redisTemplate = mockk<RedisTemplate<String, String>>()
+        val redisTemplate = mockk<StringRedisTemplate>()
         val valueOperations = mockk<ValueOperations<String, String>>()
 
         every { redisTemplate.opsForValue() } returns valueOperations
@@ -73,7 +76,7 @@ class PlaceServiceTest {
         every { valueOperations.get(any()) } returns null
         every { valueOperations.set(any(), any()) } just runs
 
-        val placeService = PlaceService(kakaoClient, naverClient, redisTemplate, placeRepository, userRepository, followRepository, databaseReader)
+        val placeService = PlaceService(kakaoClient, naverClient, redisTemplate, placeRepository, userRepository, followRepository, databaseReader, redissonClient)
 
         val result = placeService.findPlaces("some request")
 

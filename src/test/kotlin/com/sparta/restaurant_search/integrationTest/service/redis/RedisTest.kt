@@ -1,26 +1,28 @@
-package com.sparta.restaurant_search.unitTest.service
+package com.sparta.restaurant_search.integrationTest.service.redis
 
 import com.maxmind.geoip2.DatabaseReader
 import com.sparta.restaurant_search.kakao.KakaoClient
 import com.sparta.restaurant_search.naver.NaverClient
-import com.sparta.restaurant_search.redis.RedisConfig
 import com.sparta.restaurant_search.repository.FollowRepository
 import com.sparta.restaurant_search.repository.PlaceRepository
 import com.sparta.restaurant_search.repository.UserRepository
 import com.sparta.restaurant_search.service.PlaceService
-import com.sparta.restaurant_search.unitTest.service.TestRedisConfig.Companion.testRedisConnectionFactory
 import io.mockk.mockk
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.core.StringRedisTemplate
+import org.springframework.data.redis.core.ValueOperations
+import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.math.log
 
-@Testcontainers
 @SpringBootTest
 class RedisTest(): RedisContainer() {
     private var kakaoClient: KakaoClient = mockk()
@@ -29,6 +31,9 @@ class RedisTest(): RedisContainer() {
     private val userRepository: UserRepository = mockk()
     private val followRepository: FollowRepository = mockk()
     private val databaseReader: DatabaseReader = mockk()
+
+    @Autowired
+    lateinit var redissonClient: RedissonClient
 
     @Autowired
     lateinit var redisTemplate: StringRedisTemplate
@@ -64,7 +69,7 @@ class RedisTest(): RedisContainer() {
         redisStore("test_search3")
         redisStore("test_search3")
 
-        val placeService = PlaceService(kakaoClient, naverClient, redisTemplate, placeRepository, userRepository, followRepository, databaseReader)
+        val placeService = PlaceService(kakaoClient, naverClient, redisTemplate, placeRepository, userRepository, followRepository, databaseReader, redissonClient)
         val result = placeService.findBestKeywords()
 
         for(keyword in result) {
@@ -74,8 +79,8 @@ class RedisTest(): RedisContainer() {
 
     @Test
     fun 키워드_검색_동시성_테스트() {
-
         val search = "맛집"
+
         val numberOfThreads = 5
         val executor = Executors.newFixedThreadPool(numberOfThreads)
         val latch = CountDownLatch(5)
@@ -103,17 +108,32 @@ class RedisTest(): RedisContainer() {
         latch.await()
 
         val value = redisTemplate.opsForValue().get(search)
+
         Assertions.assertEquals("5", value)
+
+
     }
 
+    private val lockPrefix = "lock:"
+
     private fun redisStore(request: String) {
-        val operations = redisTemplate.opsForValue()
-        val value = operations.get(request)
-        if(value == null) {
-            operations.set(request, "1")
-        } else {
-            val incrementedValue = (value.toInt() + 1).toString()
-            operations.set(request, incrementedValue)
+        val lock = redissonClient.getLock(lockPrefix + request)
+        try {
+            if (lock.tryLock(500, 10, TimeUnit.MILLISECONDS)) {
+                val operations: ValueOperations<String, String> = redisTemplate.opsForValue()
+
+                val value = operations.get(request)
+
+                if (value == null) {
+                    operations.set(request, "1")
+                } else {
+                    // 키가 존재하면 값을 1씩 증가시키기
+                    val incrementedValue = (value.toInt() + 1).toString()
+                    operations.set(request, incrementedValue)
+                }
+            }
+        } finally {
+            lock.unlock()
         }
     }
 }

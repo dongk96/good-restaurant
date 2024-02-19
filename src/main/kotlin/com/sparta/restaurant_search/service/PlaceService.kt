@@ -18,22 +18,28 @@ import com.sparta.restaurant_search.repository.PlaceRepository
 import com.sparta.restaurant_search.repository.PromiseRepository
 import com.sparta.restaurant_search.repository.UserRepository
 import com.sparta.restaurant_search.web.request.*
+import org.redisson.api.RedissonClient
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.net.InetAddress
+import java.util.concurrent.TimeUnit
 
 @Service
 class PlaceService(
     private val kakaoClient: KakaoClient,
     private val naverClient: NaverClient,
-    private val redisTemplate: RedisTemplate<String, String>,
+    private val redisTemplate: StringRedisTemplate,
     private val placeRepository: PlaceRepository,
     private val userRepository: UserRepository,
     private val followRepository: FollowRepository,
     private val databaseReader: DatabaseReader,
+    private val redissonClient: RedissonClient
 ){
+    private val lockPrefix = "lock:"
 
     fun findPlaces(request: String): List<PlaceDto> {
         redisStore(request)
@@ -63,16 +69,27 @@ class PlaceService(
 
     // TODO TEST
     private fun redisStore(request: String) {
-        val operations: ValueOperations<String, String> = redisTemplate.opsForValue()
+        val lock = redissonClient.getLock(lockPrefix + request)
+        try {
+            if (lock.tryLock(500, 10, TimeUnit.MILLISECONDS)) { // 분산 락 획득 시도
+                val operations: ValueOperations<String, String> = redisTemplate.opsForValue()
 
-        val value = operations.get(request)
+                val value = operations.get(request)
 
-        if (value == null) {
-            operations.set(request, "1")
-        } else {
-            // 키가 존재하면 값을 1씩 증가시키기
-            val incrementedValue = (value.toInt() + 1).toString()
-            operations.set(request, incrementedValue)
+                if (value == null) {
+                    operations.set(request, "1")
+                } else {
+                    // 키가 존재하면 값을 1씩 증가시키기
+                    val incrementedValue = (value.toInt() + 1).toString()
+                    operations.set(request, incrementedValue)
+                }
+            } else {
+                // 분산 락을 획득할 수 없는 경우 처리
+                // 여기서는 간단히 로깅을 하고 예외를 던지거나 다른 처리를 수행할 수 있습니다.
+                println("Failed to acquire lock for $request")
+            }
+        } finally {
+            lock.unlock() // 분산 락 해제
         }
     }
 

@@ -42,6 +42,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    implementation("org.redisson:redisson:3.20.0")
 
     //geolocation
     implementation("com.maxmind.geoip2:geoip2:4.1.0")

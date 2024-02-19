@@ -41,7 +41,7 @@ spring:
         format_sql: true
   data:
     redis:
-      host: 13.209.22.103
+      host: 13.125.237.102
       port: 6379
       password: 1234
 

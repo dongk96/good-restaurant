@@ -7,6 +7,6 @@ services:
     volumes:
       - /home/ec2-user:/home/ec2-user
     environment:
-      - REDIS_HOST = 13.209.22.103
+      - REDIS_HOST = 13.125.237.102
       - REDIS_PORT = 6379
       - REDIS_PASSWORD = $${REDIS_PASSWORD}
