@@ -19,9 +19,8 @@ abstract class RedisContainer {
             start()
         }
 
-        @JvmStatic
-        @BeforeAll
-        fun setup(): Unit {
+        init {
+            System.setProperty("spring.data.redis.port", redisContainer.host)
             System.setProperty("spring.data.redis.port", redisContainer.getMappedPort(6379).toString())
         }
     }

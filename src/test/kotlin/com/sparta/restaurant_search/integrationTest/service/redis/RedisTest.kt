@@ -21,6 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import kotlin.math.log
 
 @SpringBootTest
@@ -117,9 +118,12 @@ class RedisTest(): RedisContainer() {
     private val lockPrefix = "lock:"
 
     private fun redisStore(request: String) {
+        val threadName = Thread.currentThread().name
+//        println(threadName)
         val lock = redissonClient.getLock(lockPrefix + request)
+
         try {
-            if (lock.tryLock(500, 10, TimeUnit.MILLISECONDS)) {
+            if (lock.tryLock(30, 10, TimeUnit.SECONDS)) {
                 val operations: ValueOperations<String, String> = redisTemplate.opsForValue()
 
                 val value = operations.get(request)
@@ -131,9 +135,15 @@ class RedisTest(): RedisContainer() {
                     val incrementedValue = (value.toInt() + 1).toString()
                     operations.set(request, incrementedValue)
                 }
+                println("$threadName : ${operations.get(request)}")
             }
+
+        }catch(e: InterruptedException) {
+            Thread.currentThread().interrupt()
         } finally {
-            lock.unlock()
+            if (lock.isHeldByCurrentThread) {
+                lock.unlock()
+            }
         }
     }
 }

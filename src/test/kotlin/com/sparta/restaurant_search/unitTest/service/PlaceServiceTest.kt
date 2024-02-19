@@ -86,4 +86,9 @@ class PlaceServiceTest {
         )
         Assertions.assertEquals(expected, result)
     }
+
+    @Test
+    fun 현재_IP_가져오기() {
+        TODO()
+    }
 }
