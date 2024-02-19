@@ -70,9 +70,12 @@ class PlaceService(
 
     // TODO TEST
     private fun redisStore(request: String) {
+        val threadName = Thread.currentThread().name
+//        println(threadName)
         val lock = redissonClient.getLock(lockPrefix + request)
+
         try {
-            if (lock.tryLock(500, 10, TimeUnit.MILLISECONDS)) { // 분산 락 획득 시도
+            if (lock.tryLock(30, 10, TimeUnit.SECONDS)) {
                 val operations: ValueOperations<String, String> = redisTemplate.opsForValue()
 
                 val value = operations.get(request)
@@ -84,13 +87,15 @@ class PlaceService(
                     val incrementedValue = (value.toInt() + 1).toString()
                     operations.set(request, incrementedValue)
                 }
-            } else {
-                // 분산 락을 획득할 수 없는 경우 처리
-                // 여기서는 간단히 로깅을 하고 예외를 던지거나 다른 처리를 수행할 수 있습니다.
-                println("Failed to acquire lock for $request")
+                println("$threadName : ${operations.get(request)}")
             }
+
+        }catch(e: InterruptedException) {
+            Thread.currentThread().interrupt()
         } finally {
-            lock.unlock() // 분산 락 해제
+            if (lock.isHeldByCurrentThread) {
+                lock.unlock()
+            }
         }
     }
 
