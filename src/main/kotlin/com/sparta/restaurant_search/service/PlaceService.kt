@@ -1,5 +1,6 @@
 package com.sparta.restaurant_search.service
 
+import com.ip2location.spring.strategies.attribute.AttributeStrategy
 import com.maxmind.geoip2.DatabaseReader
 import com.maxmind.geoip2.model.CityResponse
 import com.maxmind.geoip2.record.Location
@@ -18,6 +19,7 @@ import com.sparta.restaurant_search.repository.PlaceRepository
 import com.sparta.restaurant_search.repository.PromiseRepository
 import com.sparta.restaurant_search.repository.UserRepository
 import com.sparta.restaurant_search.web.request.*
+import jakarta.servlet.http.HttpServletRequest
 import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
@@ -37,9 +39,11 @@ class PlaceService(
     private val userRepository: UserRepository,
     private val followRepository: FollowRepository,
     private val databaseReader: DatabaseReader,
-    private val redissonClient: RedissonClient
+    private val redissonClient: RedissonClient,
+    private val attributeStrategy: AttributeStrategy
 ){
     private val lockPrefix = "lock:"
+
 
     fun findPlaces(request: String): List<PlaceDto> {
         redisStore(request)
@@ -56,14 +60,17 @@ class PlaceService(
         return answer
     }
 
-    fun findPlacesAround(request: String, ipAddress: String): List<PlaceDto> {
-        println(ipAddress)
-        val ipAddressBytes = InetAddress.getByName(ipAddress).address
-        val response: CityResponse = databaseReader.city(InetAddress.getByAddress(ipAddressBytes))
-        val location: Location = response.location
+    fun findPlacesAround(search: String, request: HttpServletRequest): List<PlaceDto> {
 
-        redisStore(request)
-        val places = kakaoClient.localSearchWithLocation(SearchKakaoWithLocationRequest(request, location.latitude, location.longitude))
+//        val ipAddressBytes = InetAddress.getByName(ipAddress).address
+//        val response: CityResponse = databaseReader.city(InetAddress.getByAddress(ipAddressBytes))
+//        val location: Location = response.location
+        val ipResponse = attributeStrategy.getAttribute(request)
+        val latitude = ipResponse?.get("latitude")?.asDouble
+        val longitude = ipResponse?.get("longitude")?.asDouble
+
+        redisStore(search)
+        val places = kakaoClient.localSearchWithLocation(SearchKakaoWithLocationRequest(search, latitude, longitude))
 
         return PlaceDto.fromKakao(places)
     }

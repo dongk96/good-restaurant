@@ -1,5 +1,7 @@
 package com.sparta.restaurant_search.api
 
+import com.google.gson.JsonObject
+import com.ip2location.spring.strategies.attribute.AttributeStrategy
 import com.sparta.restaurant_search.domain.dto.BestPlaceDto
 import com.sparta.restaurant_search.domain.dto.KeywordDto
 import com.sparta.restaurant_search.domain.dto.PlaceDto
@@ -12,6 +14,7 @@ import com.sparta.restaurant_search.web.reponse.SingleResponse
 import com.sparta.restaurant_search.web.request.DeliciousPlaceRequest
 import jakarta.servlet.http.HttpServletRequest
 import lombok.RequiredArgsConstructor
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*
 class PlaceApi(
     private val placeService: PlaceService
 ) {
+
     @GetMapping("/v2/places/search")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     fun findPlaces(
@@ -46,10 +50,8 @@ class PlaceApi(
         @RequestParam search: String,
         request: HttpServletRequest
     ): ResponseEntity<ListResponse<PlaceDto>> {
-//        println(request.remoteAddr)
-//        val ipAddress = request.getHeader("X-FORWARDED-FOR") ?: request.remoteAddr
 
-        val places = placeService.findPlacesAround(search, request.remoteAddr)
+        val places = placeService.findPlacesAround(search, request)
         return ResponseEntity(ListResponse.successOf(places), HttpStatus.OK)
     }
 

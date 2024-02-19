@@ -47,6 +47,8 @@ dependencies {
     //geolocation
     implementation("com.maxmind.geoip2:geoip2:4.1.0")
 
+    implementation("com.ip2location:ip2location-io-spring:1.0.0")
+
     runtimeOnly ("com.mysql:mysql-connector-j")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
