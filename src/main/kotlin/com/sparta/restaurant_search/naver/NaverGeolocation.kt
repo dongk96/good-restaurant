@@ -27,8 +27,6 @@ class NaverGeolocation(
     private val naverGeoSecret: String,
 
 ) {
-    val accessKey: String = System.getenv(naverGeoId) // 발급받은 API Key 입력
-    val secretKey: String = System.getenv(naverGeoSecret) // 발급받은 Secret Key 입력
     val hostName = "https://geolocation.apigw.ntruss.com"
     val requestUrl = "/geolocation/v2/geoLocation"
 
@@ -42,7 +40,7 @@ class NaverGeolocation(
         val timeStamp = System.currentTimeMillis().toString()
         val queryString = sortedSet.map { "${it.key}=${it.value}" }.joinToString("&")
         val baseString = "$requestUrl?$queryString"
-        val signature = makeSignature(secretKey, "GET", baseString, timeStamp, accessKey)
+        val signature = makeSignature(naverGeoSecret, "GET", baseString, timeStamp, naverGeoId)
 
 
         val headers = HttpHeaders()
