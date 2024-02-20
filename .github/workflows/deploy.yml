@@ -72,5 +72,5 @@ jobs:
             docker-compose down
             docker image rm ${{secrets.DOCKER_USERNAME}}/restaurant_search:latest
             docker-compose up -d
-            rm -f /geolocation/geoLite2-City.mmdb
-            wget -nv -O /geolocation/geoLite2-City.mmdb https://git.io/GeoLite2-City.mmdb
+            sudo rm -f /geolocation/geoLite2-City.mmdb
+            sudo wget -nv -O /geolocation/geoLite2-City.mmdb https://git.io/GeoLite2-City.mmdb
