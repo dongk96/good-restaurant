@@ -32,6 +32,9 @@ jobs:
           target: "~"
           strip_components: 2
 
+      - name: Update GeoLite2-City.mmdb
+        run: ssh ec2-user@${{ secrets.SSH_HOST }} -i ${{ secrets.SSH_KEY }} 'rm -f /geolocation/GeoLite2-City.mmdb && wget -nv -O /geolocation/GeoLite2-City.mmdb https://git.io/GeoLite2-City.mmdb'
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

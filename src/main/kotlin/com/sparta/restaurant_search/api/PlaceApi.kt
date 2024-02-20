@@ -51,7 +51,7 @@ class PlaceApi(
         request: HttpServletRequest
     ): ResponseEntity<ListResponse<PlaceDto>> {
 
-        val places = placeService.findPlacesAround(search, request)
+        val places = placeService.findPlacesAround(search, request.remoteAddr)
         return ResponseEntity(ListResponse.successOf(places), HttpStatus.OK)
     }
 

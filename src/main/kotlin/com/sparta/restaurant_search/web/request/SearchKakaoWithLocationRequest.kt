@@ -7,6 +7,7 @@ data class SearchKakaoWithLocationRequest(
         private val query: String = "",
         private val x: Double = 0.0,
         private val y: Double = 0.0,
+        private val radius: Int = 500,
         private val size: Int = 15,
         private val sort: String = "accuracy"
 
@@ -16,6 +17,7 @@ data class SearchKakaoWithLocationRequest(
         map.add("query", query)
         map.add("x", x.toString())
         map.add("y", y.toString())
+        map.add("radius", radius.toString())
         map.add("size", size.toString())
         map.add("sort", sort)
 
