@@ -25,43 +25,55 @@ class NaverGeolocation(
     private val naverGeoId: String,
 
     @Value("\${naver.geolocation.secret}")
-    private val naverGeoSecret: String
+    private val naverGeoSecret: String,
+
+    @Value("\${naver.geolocation.url}")
+    private val naverGeoUrl: String
 ) {
-    private val hostName = "https://geolocation.apigw.ntruss.com"
-    private val requestUrl = "/geolocation/v2/geoLocation"
-
     fun search(ip: String): SearchNaverGeoResponse {
-        val sortedSet = TreeMap<String, String>()
-        sortedSet["ip"] = ip
-        sortedSet["responseFormatType"] = "json"
 
-        val timeStamp = System.currentTimeMillis().toString()
-        val queryString = sortedSet.map { "${it.key}=${it.value}" }.joinToString("&")
-        val baseString = "$requestUrl?$queryString"
-        val signature = makeSignature(naverGeoSecret, "GET", baseString, timeStamp, naverGeoId)
+        val timestamp = System.currentTimeMillis().toString()
+
+        val uri = UriComponentsBuilder
+            .fromUriString(naverGeoUrl)
+            .queryParam(ip)
+            .build()
+            .encode()
+            .toUri()
+
+        val signature = makeSignature("GET", timestamp, naverGeoId, naverGeoSecret)
 
         val headers = HttpHeaders()
-        headers.set("x-ncp-apigw-timestamp", timeStamp)
+        headers.set("x-ncp-apigw-timestamp", timestamp)
         headers.set("x-ncp-iam-access-key", naverGeoId)
-        headers.set("x-ncp-apigw-signature-v2", signature)
+        headers.set("x-ncp-apigw-signature-v2", naverGeoSecret)
         headers.contentType = MediaType.APPLICATION_JSON
 
-        val restTemplate = RestTemplate()
-        val response = restTemplate.getForObject("$hostName$baseString", String::class.java)
-            ?: throw IllegalStateException("Failed to retrieve search results.")
+        val httpEntity = HttpEntity<Any>(headers)
+        val responseType = object : ParameterizedTypeReference<SearchNaverGeoResponse>() {}
 
-        val jsonObject = ObjectMapper().readTree(response)
-        val lat = jsonObject["lat"].asDouble()
-        val long = jsonObject["long"].asDouble()
-        return SearchNaverGeoResponse(lat, long)
+        val responseEntity = RestTemplate().exchange(
+            uri,
+            HttpMethod.GET,
+            httpEntity,
+            responseType
+        )
+
+        return responseEntity.body ?: throw IllegalStateException("Failed to retrieve search results.")
+
     }
 
-    private fun makeSignature(secretKey: String, method: String, baseString: String, timestamp: String, accessKey: String): String {
+    fun makeSignature(
+        method: String,
+        timestamp: String,
+        accessKey: String,
+        secretKey: String
+    ): String {
         val hmacSha256 = Mac.getInstance("HmacSHA256")
         val secretKeySpec = SecretKeySpec(secretKey.toByteArray(), "HmacSHA256")
         hmacSha256.init(secretKeySpec)
 
-        val message = "$method\n$baseString\n$timestamp\n$accessKey"
+        val message = "$method\n$timestamp\n$accessKey"
         val hash = hmacSha256.doFinal(message.toByteArray())
         return Base64.getEncoder().encodeToString(hash)
     }
