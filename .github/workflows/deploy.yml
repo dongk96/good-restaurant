@@ -69,7 +69,6 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            ssh ec2-user@${{ secrets.SSH_HOST }} -i ${{ secrets.SSH_KEY }} 'rm -f /geolocation/geoLite2-City.mmdb && wget -nv -O /geolocation/geoLite2-City.mmdb https://git.io/GeoLite2-City.mmdb'
             docker-compose down
             docker image rm ${{secrets.DOCKER_USERNAME}}/restaurant_search:latest
             docker-compose up -d
