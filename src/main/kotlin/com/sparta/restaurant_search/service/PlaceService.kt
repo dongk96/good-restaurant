@@ -58,7 +58,7 @@ class PlaceService(
 
     fun findPlacesAround(request: String, ipAddress: String): List<PlaceDto> {
         println(ipAddress)
-        val naverGeoSearch = naverGeolocation.search(ipAddress)
+        val naverGeoSearch = naverGeolocation.searchNaverGeo(ipAddress)
 //        val ipAddressBytes = InetAddress.getByName(ipAddress).address
 //        val response: CityResponse = databaseReader.city(InetAddress.getByAddress(ipAddressBytes))
 //        val location: Location = response.location
