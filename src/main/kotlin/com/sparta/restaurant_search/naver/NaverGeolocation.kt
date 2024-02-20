@@ -46,7 +46,7 @@ class NaverGeolocation(
         val headers = HttpHeaders()
         headers.set("x-ncp-apigw-timestamp", System.currentTimeMillis().toString())
         headers.set("x-ncp-iam-access-key", naverGeoId)
-        headers.set("X-Naver-Client-Secret", naverGeoSecret)
+        headers.set("x-ncp-apigw-signature-v2", signature)
         headers.contentType = MediaType.APPLICATION_JSON
 
         val restTemplate = RestTemplate()
