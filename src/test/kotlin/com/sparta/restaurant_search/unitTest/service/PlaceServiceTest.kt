@@ -5,6 +5,7 @@ import com.sparta.restaurant_search.domain.dto.PlaceDto
 import com.sparta.restaurant_search.exception.KakaoApiException
 import com.sparta.restaurant_search.kakao.KakaoClient
 import com.sparta.restaurant_search.naver.NaverClient
+import com.sparta.restaurant_search.naver.NaverGeolocation
 import com.sparta.restaurant_search.repository.FollowRepository
 import com.sparta.restaurant_search.repository.PlaceRepository
 import com.sparta.restaurant_search.repository.UserRepository
@@ -33,6 +34,7 @@ class PlaceServiceTest {
     private lateinit var kakaoClient: KakaoClient
     @Autowired
     private lateinit var naverClient: NaverClient
+    private val naverGeolocation:NaverGeolocation = mockk()
     private val placeRepository:PlaceRepository = mockk()
     private val userRepository:UserRepository = mockk()
     private val followRepository:FollowRepository = mockk()
@@ -76,7 +78,7 @@ class PlaceServiceTest {
         every { valueOperations.get(any()) } returns null
         every { valueOperations.set(any(), any()) } just runs
 
-        val placeService = PlaceService(kakaoClient, naverClient, redisTemplate, placeRepository, userRepository, followRepository, databaseReader, redissonClient)
+        val placeService = PlaceService(kakaoClient, naverClient, naverGeolocation, redisTemplate, placeRepository, userRepository, followRepository, databaseReader, redissonClient)
 
         val result = placeService.findPlaces("some request")
 

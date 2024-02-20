@@ -3,6 +3,7 @@ package com.sparta.restaurant_search.integrationTest.service.redis
 import com.maxmind.geoip2.DatabaseReader
 import com.sparta.restaurant_search.kakao.KakaoClient
 import com.sparta.restaurant_search.naver.NaverClient
+import com.sparta.restaurant_search.naver.NaverGeolocation
 import com.sparta.restaurant_search.repository.FollowRepository
 import com.sparta.restaurant_search.repository.PlaceRepository
 import com.sparta.restaurant_search.repository.UserRepository
@@ -28,6 +29,7 @@ import kotlin.math.log
 class RedisTest(): RedisContainer() {
     private var kakaoClient: KakaoClient = mockk()
     private var naverClient: NaverClient = mockk()
+    private val naverGeolocation: NaverGeolocation = mockk()
     private val placeRepository: PlaceRepository = mockk()
     private val userRepository: UserRepository = mockk()
     private val followRepository: FollowRepository = mockk()
@@ -70,7 +72,7 @@ class RedisTest(): RedisContainer() {
         redisStore("test_search3")
         redisStore("test_search3")
 
-        val placeService = PlaceService(kakaoClient, naverClient, redisTemplate, placeRepository, userRepository, followRepository, databaseReader, redissonClient)
+        val placeService = PlaceService(kakaoClient, naverClient, naverGeolocation, redisTemplate, placeRepository, userRepository, followRepository, databaseReader, redissonClient)
         val result = placeService.findBestKeywords()
 
         for(keyword in result) {

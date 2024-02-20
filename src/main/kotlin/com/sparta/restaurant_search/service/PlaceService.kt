@@ -13,6 +13,7 @@ import com.sparta.restaurant_search.exception.NaverApiException
 import com.sparta.restaurant_search.exception.NotFoundException
 import com.sparta.restaurant_search.kakao.KakaoClient
 import com.sparta.restaurant_search.naver.NaverClient
+import com.sparta.restaurant_search.naver.NaverGeolocation
 import com.sparta.restaurant_search.repository.FollowRepository
 import com.sparta.restaurant_search.repository.PlaceRepository
 import com.sparta.restaurant_search.repository.UserRepository
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeUnit
 class PlaceService(
     private val kakaoClient: KakaoClient,
     private val naverClient: NaverClient,
+    private val naverGeolocation: NaverGeolocation,
     private val redisTemplate: StringRedisTemplate,
     private val placeRepository: PlaceRepository,
     private val userRepository: UserRepository,
@@ -56,12 +58,13 @@ class PlaceService(
 
     fun findPlacesAround(request: String, ipAddress: String): List<PlaceDto> {
         println(ipAddress)
-        val ipAddressBytes = InetAddress.getByName(ipAddress).address
-        val response: CityResponse = databaseReader.city(InetAddress.getByAddress(ipAddressBytes))
-        val location: Location = response.location
+        val naverGeoSearch = naverGeolocation.search(ipAddress)
+//        val ipAddressBytes = InetAddress.getByName(ipAddress).address
+//        val response: CityResponse = databaseReader.city(InetAddress.getByAddress(ipAddressBytes))
+//        val location: Location = response.location
 
         redisStore(request)
-        val places = kakaoClient.localSearchWithLocation(SearchKakaoWithLocationRequest(request, location.latitude, location.longitude))
+        val places = kakaoClient.localSearchWithLocation(SearchKakaoWithLocationRequest(request, naverGeoSearch.lat.toDouble(), naverGeoSearch.long.toDouble()))
 
         return PlaceDto.fromKakao(places)
     }
