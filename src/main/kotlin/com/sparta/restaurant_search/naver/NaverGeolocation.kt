@@ -1,5 +1,6 @@
 package com.sparta.restaurant_search.naver
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.sparta.restaurant_search.web.reponse.SearchNaverGeoResponse
 import com.sparta.restaurant_search.web.reponse.SearchNaverResponse
 import org.springframework.beans.factory.annotation.Value
@@ -24,17 +25,14 @@ class NaverGeolocation(
     private val naverGeoId: String,
 
     @Value("\${naver.geolocation.secret}")
-    private val naverGeoSecret: String,
-
+    private val naverGeoSecret: String
 ) {
-    val hostName = "https://geolocation.apigw.ntruss.com"
-    val requestUrl = "/geolocation/v2/geoLocation"
+    private val hostName = "https://geolocation.apigw.ntruss.com"
+    private val requestUrl = "/geolocation/v2/geoLocation"
 
     fun search(ip: String): SearchNaverGeoResponse {
-
         val sortedSet = TreeMap<String, String>()
         sortedSet["ip"] = ip
-        sortedSet["ext"] = "t"
         sortedSet["responseFormatType"] = "json"
 
         val timeStamp = System.currentTimeMillis().toString()
@@ -42,26 +40,23 @@ class NaverGeolocation(
         val baseString = "$requestUrl?$queryString"
         val signature = makeSignature(naverGeoSecret, "GET", baseString, timeStamp, naverGeoId)
 
-
         val headers = HttpHeaders()
-        headers.set("x-ncp-apigw-timestamp", System.currentTimeMillis().toString())
+        headers.set("x-ncp-apigw-timestamp", timeStamp)
         headers.set("x-ncp-iam-access-key", naverGeoId)
         headers.set("x-ncp-apigw-signature-v2", signature)
         headers.contentType = MediaType.APPLICATION_JSON
 
         val restTemplate = RestTemplate()
         val response = restTemplate.getForObject("$hostName$baseString", String::class.java)
-        if (response != null) {
-            val jsonObject = JSONObject(response)
-            val lat = jsonObject.getDouble("lat")
-            val long = jsonObject.getDouble("long")
-            return SearchNaverGeoResponse(lat, long)
-        } else {
-            throw IllegalStateException("Failed to retrieve search results.")
-        }
+            ?: throw IllegalStateException("Failed to retrieve search results.")
+
+        val jsonObject = ObjectMapper().readTree(response)
+        val lat = jsonObject["lat"].asDouble()
+        val long = jsonObject["long"].asDouble()
+        return SearchNaverGeoResponse(lat, long)
     }
 
-    fun makeSignature(secretKey: String, method: String, baseString: String, timestamp: String, accessKey: String): String {
+    private fun makeSignature(secretKey: String, method: String, baseString: String, timestamp: String, accessKey: String): String {
         val hmacSha256 = Mac.getInstance("HmacSHA256")
         val secretKeySpec = SecretKeySpec(secretKey.toByteArray(), "HmacSHA256")
         hmacSha256.init(secretKeySpec)

@@ -17,7 +17,6 @@ naver:
     id : N3RRwr_HmoezA9_hjk6D
     secret: 3trwZUt8eo
   geolocation:
-    url: https://geolocation.apigw.fin-ntruss.com/geolocation/v2/geoLocation
     id : Y7llknduE2BPhlwzbtUN
     secret: p4vtXniXLFSgQPO8aWPaAlWXW0PQG9LKCxQhPBCN
 
