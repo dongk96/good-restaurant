@@ -45,38 +45,6 @@ class NaverGeolocation(
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build()
     }
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            if (args.size != 3) {
-                println("Usage : accessKey secretKey ip")
-                return
-            }
-
-            try {
-                val apiClient = NaverGeolocation(args[0], args[1])
-                val response = apiClient.searchNaverGeo(args[2])
-                println("Latitude: ${response.lat}, Longitude: ${response.long}")
-            } catch (e: Exception) {
-                println(e.message)
-            }
-        }
-
-        private fun convertTypeToSortedMap(requestParameters: Map<String, List<String>>): SortedMap<String, SortedSet<String>> {
-            val significateParameters = TreeMap<String, SortedSet<String>>()
-            for ((parameterName, parameterValues) in requestParameters) {
-                val significantValues = TreeSet<String>()
-                parameterValues?.let {
-                    for (parameterValue in it) {
-                        significantValues.add(parameterValue ?: "")
-                    }
-                }
-                significateParameters[parameterName] = significantValues
-            }
-            return significateParameters
-        }
-    }
-
     fun searchNaverGeo(ip: String): SearchNaverGeoResponse {
         val requestMethod = "GET"
         val hostName = "https://geolocation.apigw.fin-ntruss.com"
@@ -111,6 +79,20 @@ class NaverGeolocation(
         // Parse response to SearchNaverGeoResponse
         val (lat, long) = parseResponseToLatLng(msg)
         return SearchNaverGeoResponse(lat, long)
+    }
+
+    private fun convertTypeToSortedMap(requestParameters: Map<String, List<String>>): SortedMap<String, SortedSet<String>> {
+        val significateParameters = TreeMap<String, SortedSet<String>>()
+        for ((parameterName, parameterValues) in requestParameters) {
+            val significantValues = TreeSet<String>()
+            parameterValues?.let {
+                for (parameterValue in it) {
+                    significantValues.add(parameterValue ?: "")
+                }
+            }
+            significateParameters[parameterName] = significantValues
+        }
+        return significateParameters
     }
 
     private fun getResponse(response: CloseableHttpResponse): String {
