@@ -49,6 +49,9 @@ dependencies {
 
     implementation("com.ip2location:ip2location-io-spring:1.0.0")
 
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    implementation("org.apache.httpcomponents:httpcore:4.4.13")
+
     runtimeOnly ("com.mysql:mysql-connector-j")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
